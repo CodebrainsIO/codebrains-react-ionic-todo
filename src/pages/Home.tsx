@@ -13,7 +13,7 @@ import {
   useIonViewWillEnter
 } from '@ionic/react';
 import './Home.css';
-import { Todo, findAllTodos } from '../data/todos';
+import { Todo, findAllTodos, updateTodo, deleteTodo } from '../data/todos';
 import TodoListItem from '../components/TodoListItem';
 
 const Home: React.FC = () => {
@@ -36,6 +36,25 @@ const Home: React.FC = () => {
     }, 3000);
   };
 
+  const handleToggleTodoStatus = (todo: Todo) => {
+    todo.completed = !todo.completed;
+    console.log('Updated Todo', todo);
+    updateTodo(todo).then(() => {
+      findAllTodos().then(res => {
+        setTodos(res.data);
+      });
+    })
+  };
+
+  const handleTodoDelete = (todo: Todo) => {
+    console.log("delete todo", todo)
+    /*deleteTodo(todo.id).then(() => {
+      findAllTodos().then(res => {
+        setTodos(res.data);
+      })
+    });*/
+  }
+
   return (
     <IonPage id="home-page">
       <IonHeader>
@@ -57,7 +76,7 @@ const Home: React.FC = () => {
         </IonHeader>
 
         <IonList>
-          {todos.map(t => <TodoListItem key={t.id} todo={t} />)}
+            {todos.map(t => <TodoListItem key={t.id} todo={t} onToggleTodo={handleToggleTodoStatus} onDeleteTodo={handleTodoDelete} />)}
         </IonList>
       </IonContent>
     </IonPage>
