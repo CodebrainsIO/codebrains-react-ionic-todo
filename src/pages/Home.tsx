@@ -13,14 +13,21 @@ import {
   useIonViewWillEnter
 } from '@ionic/react';
 import './Home.css';
+import { Todo, findAllTodos } from '../data/todos';
+import TodoListItem from '../components/TodoListItem';
 
 const Home: React.FC = () => {
 
   const [messages, setMessages] = useState<Message[]>([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
 
   useIonViewWillEnter(() => {
     const msgs = getMessages();
     setMessages(msgs);
+
+    findAllTodos().then(res => {
+      setTodos(res.data);
+    })
   });
 
   const refresh = (e: CustomEvent) => {
@@ -33,7 +40,7 @@ const Home: React.FC = () => {
     <IonPage id="home-page">
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Inbox</IonTitle>
+          <IonTitle>Codebrains Todos</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -44,13 +51,13 @@ const Home: React.FC = () => {
         <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">
-              Inbox
+              Codebrains Todos
             </IonTitle>
           </IonToolbar>
         </IonHeader>
 
         <IonList>
-          {messages.map(m => <MessageListItem key={m.id} message={m} />)}
+          {todos.map(t => <TodoListItem key={t.id} todo={t} />)}
         </IonList>
       </IonContent>
     </IonPage>
