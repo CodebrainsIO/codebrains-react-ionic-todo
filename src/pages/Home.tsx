@@ -13,8 +13,9 @@ import {
   useIonViewWillEnter
 } from '@ionic/react';
 import './Home.css';
-import { Todo, findAllTodos, updateTodo, deleteTodo } from '../data/todos';
+import { Todo, findAllTodos, updateTodo, deleteTodo, createTodo } from '../data/todos';
 import TodoListItem from '../components/TodoListItem';
+import TodoForm from '../components/TodoForm';
 
 const Home: React.FC = () => {
 
@@ -25,9 +26,7 @@ const Home: React.FC = () => {
     const msgs = getMessages();
     setMessages(msgs);
 
-    findAllTodos().then(res => {
-      setTodos(res.data);
-    })
+    loadTodos();
   });
 
   const refresh = (e: CustomEvent) => {
@@ -35,26 +34,34 @@ const Home: React.FC = () => {
       e.detail.complete();
     }, 3000);
   };
+  const loadTodos = () => {
+    findAllTodos().then(res => {
+      setTodos(res.data);
+    });
+  }
+  const handleTodoCreate = (todo: Todo) => {
+    console.log(todo)
+    createTodo(todo).then(() => {
+      loadTodos();
+    })
+  }
 
   const handleToggleTodoStatus = (todo: Todo) => {
     todo.completed = !todo.completed;
     console.log('Updated Todo', todo);
     updateTodo(todo).then(() => {
-      findAllTodos().then(res => {
-        setTodos(res.data);
-      });
+      loadTodos();
     })
   };
 
   const handleTodoDelete = (todo: Todo) => {
     console.log("delete todo", todo)
-    /*deleteTodo(todo.id).then(() => {
-      findAllTodos().then(res => {
-        setTodos(res.data);
-      })
-    });*/
+    deleteTodo(todo.id!).then(() => {
+      loadTodos();
+    });
   }
 
+  
   return (
     <IonPage id="home-page">
       <IonHeader>
@@ -74,7 +81,7 @@ const Home: React.FC = () => {
             </IonTitle>
           </IonToolbar>
         </IonHeader>
-
+        <TodoForm submitForm={handleTodoCreate} />
         <IonList>
             {todos.map(t => <TodoListItem key={t.id} todo={t} onToggleTodo={handleToggleTodoStatus} onDeleteTodo={handleTodoDelete} />)}
         </IonList>
